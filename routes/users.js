@@ -20,9 +20,48 @@ router.post('/signup', async(req, res) => {
   res.send('Rota de cadastro do usuário');
 });
 
+const usersData = [
+  {
+    "id": 1,
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "senha": "senha123",
+    "status": "ativo",
+    "tipo": "comprador",
+    "created_at": "2023-10-04T14:57:50.000Z",
+    "updated_at": "2023-10-04T14:57:50.000Z"
+  },
+  {
+    "id": 2,
+    "nome": "Maria Santos",
+    "email": "maria@example.com",
+    "senha": "senha456",
+    "status": "ativo",
+    "tipo": "vendedor",
+    "created_at": "2023-10-04T14:57:50.000Z",
+    "updated_at": "2023-10-04T14:57:50.000Z"
+  },
+  {
+    "id": 3,
+    "nome": "Admin",
+    "email": "admin@example.com",
+    "senha": "admin123",
+    "status": "ativo",
+    "tipo": "administrador",
+    "created_at": "2023-10-04T14:57:50.000Z",
+    "updated_at": "2023-10-04T14:57:50.000Z"
+  }
+];
 router.post('/login', (req, res) => {
-  // Implemente a autenticação do usuário aqui
-  res.send('Rota de login do usuário');
+  const { email, senha } = req.body;
+  console.log('Email:', email);
+  console.log('Senha:', senha);
+  const user = usersData.find(user => user.email === email && user.senha === senha);
+  if (user) {
+    res.send('Autenticação bem-sucedida');
+  } else {
+    res.status(401).send('Autenticação falhou');
+  }
 });
 
 router.put('/:id', (req, res) => {
