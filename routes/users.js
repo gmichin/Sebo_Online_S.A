@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 
 const db = require('../db');
 router.get('/data', (req, res) => {
@@ -15,52 +16,29 @@ router.get('/data', (req, res) => {
 });
 
 router.post('/signup', async(req, res) => {
-  const { nome, email, senha } = req.body;
-  const hashedPassword = await bcrypt.hash(senha, 10);
   res.send('Rota de cadastro do usuário');
 });
 
-const usersData = [
-  {
-    "id": 1,
-    "nome": "João Silva",
-    "email": "joao@example.com",
-    "senha": "senha123",
-    "status": "ativo",
-    "tipo": "comprador",
-    "created_at": "2023-10-04T14:57:50.000Z",
-    "updated_at": "2023-10-04T14:57:50.000Z"
-  },
-  {
-    "id": 2,
-    "nome": "Maria Santos",
-    "email": "maria@example.com",
-    "senha": "senha456",
-    "status": "ativo",
-    "tipo": "vendedor",
-    "created_at": "2023-10-04T14:57:50.000Z",
-    "updated_at": "2023-10-04T14:57:50.000Z"
-  },
-  {
-    "id": 3,
-    "nome": "Admin",
-    "email": "admin@example.com",
-    "senha": "admin123",
-    "status": "ativo",
-    "tipo": "administrador",
-    "created_at": "2023-10-04T14:57:50.000Z",
-    "updated_at": "2023-10-04T14:57:50.000Z"
-  }
-];
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
-  console.log('Email:', email);
+  console.log('\n\nEmail:', email);
   console.log('Senha:', senha);
-  const user = usersData.find(user => user.email === email && user.senha === senha);
-  if (user) {
-    res.send('Autenticação bem-sucedida');
-  } else {
-    res.status(401).send('Autenticação falhou');
+
+  try {
+    const response = await fetch('http://localhost:3000/users/data');
+    if (!response.ok) {
+      throw new Error('Erro ao buscar os dados dos usuários');
+    }
+    const usersData = await response.json();
+    const user = usersData.find(user => user.email === email && user.senha === senha);
+    if (user) {
+      res.send('Autenticação bem-sucedida');
+    } else {
+      res.status(401).send('Autenticação falhou');
+    }
+  } catch (error) {
+    console.error('Erro:', error.message);
+    res.status(500).send('Erro interno do servidor');
   }
 });
 

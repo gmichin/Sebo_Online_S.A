@@ -1,6 +1,6 @@
-// routes/admin.js
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 
 const db = require('../db');
 router.get('/data', (req, res) => {
@@ -16,42 +16,30 @@ router.get('/data', (req, res) => {
 });
 
 router.post('/signup', async(req, res) => {
-  const { nome, email, senha } = req.body;
-  const hashedPassword = await bcrypt.hash(senha, 10);
   res.send('Rota de cadastro');
 });
 
-const adminData = [
-  {
-    "id": 1,
-    "nome": "Admin",
-    "email": "admin@example.com",
-    "senha": "admin123",
-    "data_inicio": "2023-01-01T03:00:00.000Z",
-    "area_especializacao": "Tecnologia",
-    "created_at": "2023-10-04T14:57:50.000Z",
-    "updated_at": "2023-10-04T14:57:50.000Z"
-  },
-  {
-    "id": 2,
-    "nome": "Alice Admin",
-    "email": "alice@example.com",
-    "senha": "admin456",
-    "data_inicio": "2022-06-15T03:00:00.000Z",
-    "area_especializacao": "Marketing",
-    "created_at": "2023-10-04T14:57:50.000Z",
-    "updated_at": "2023-10-04T14:57:50.000Z"
-  }
-];
-router.post('/login', (req, res) => {
+
+router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
-  console.log('Email:', email);
+  console.log('\n\nEmail:', email);
   console.log('Senha:', senha);
-  const admin = adminData.find(admin => admin.email === email && admin.senha === senha);
-  if (admin) {
-    res.send('Autenticação bem-sucedida');
-  } else {
-    res.status(401).send('Autenticação falhou');
+
+  try {
+    const response = await fetch('http://localhost:3000/admin/data');
+    if (!response.ok) {
+      throw new Error('Erro ao buscar os dados dos administradores');
+    }
+    const adminData = await response.json();
+    const admin = adminData.find(admin => admin.email === email && admin.senha === senha);
+    if (admin) {
+      res.send('Autenticação bem-sucedida');
+    } else {
+      res.status(401).send('Autenticação falhou');
+    }
+  } catch (error) {
+    console.error('Erro:', error.message);
+    res.status(500).send('Erro interno do servidor');
   }
 });
 
