@@ -1,19 +1,9 @@
-// routes/users.js
 const express = require('express');
 const router = express.Router();
 
-// Importe as funções de controle de usuário aqui
-const { signup, login, updateUser, deleteUser } = require('../controllers/users');
-
-router.post('/signup', signup);
-router.post('/login', login);
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser);
-
-const db = require('../db'); // Importe a conexão com o banco de dados aqui
-// Rota para obter dados dos usuários em formato JSON
+const db = require('../db');
 router.get('/data', (req, res) => {
-  const query = 'SELECT * FROM users'; // Query SQL para selecionar todos os usuários
+  const query = 'SELECT * FROM users';
 
   db.query(query, (err, result) => {
     if (err) {
@@ -22,6 +12,27 @@ router.get('/data', (req, res) => {
       res.json(result);
     }
   });
+});
+
+router.post('/signup', async(req, res) => {
+  const { nome, email, senha } = req.body;
+  const hashedPassword = await bcrypt.hash(senha, 10);
+  res.send('Rota de cadastro do usuário');
+});
+
+router.post('/login', (req, res) => {
+  // Implemente a autenticação do usuário aqui
+  res.send('Rota de login do usuário');
+});
+
+router.put('/:id', (req, res) => {
+  /// Implemente a edição do perfil do usuário aqui
+  res.send('Rota de edição de usuários');
+});
+
+router.delete('/:id', (req, res) => {
+  // Implemente o soft delete do usuário aqui
+  res.send('Rota de soft delete de usuários');
 });
 
 module.exports = router;
