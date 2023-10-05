@@ -72,7 +72,7 @@ router.put('/:token', (req, res) => {
 
 
 
-router.delete('/:id', (req, res) => {
+router.delete('/:token', (req, res) => {
   // Implemente o soft delete do usuário aqui
   res.send('Rota de soft delete de usuários');
 });
