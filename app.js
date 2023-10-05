@@ -15,11 +15,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/profile.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'profile.html'));
-});
-
-
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });

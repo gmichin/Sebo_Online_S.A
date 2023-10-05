@@ -21,7 +21,7 @@ router.get('/data', (req, res) => {
 
 
 // Rota para obter as informações do usuário com base no token
-router.get('/api/user', async (req, res) => {
+router.get('/profile', async (req, res) => {
   const token = req.query.token;
   if (!token) {
     return res.status(400).json({ error: 'Token de autenticação ausente' });
