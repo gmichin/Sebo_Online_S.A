@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <title>Cadastro - Sebo Online</title>
+    <title>Cadastro de Administrador/Usuário</title>
+    <script>
+/* // Função para validar formato de email
+function isValidEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return emailRegex.test(email);
+}
+// Função para validar senha forte
+function isStrongPassword(password) {
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%^&*])[A-Za-z\d@#$!%^&*]{8,}$/;
+  return passwordRegex.test(password);
+} */
+        function showFields(type) {
+            if (type === "administrador") {
+                document.getElementById("adminFields").style.display = "block";
+                document.getElementById("userFields").style.display = "none";
+            } else if (type === "usuario") {
+                document.getElementById("adminFields").style.display = "none";
+                document.getElementById("userFields").style.display = "block";
+            } else {
+                document.getElementById("adminFields").style.display = "none";
+                document.getElementById("userFields").style.display = "none";
+            }
+        }
+    
+    </script>
 </head>
 <body>
     <header>
@@ -16,17 +41,55 @@
     </header>
     <main>
         <h1>Cadastro</h1>
-        <form action="/users/signup" method="POST">
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required>
-            <br>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <br>
-            <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" required>
-            <br>
-            <input type="submit" value="Registrar">
+        <form>
+            <label for="type">Escolha o tipo de cadastro:</label>
+            <select id="type" onchange="showFields(this.value)">
+                <option value="">Selecione</option>
+                <option value="administrador">Administrador</option>
+                <option value="usuario">Usuário</option>
+            </select>
+            
+            <div id="adminFields" style="display: none;">
+                <label for="adminNome">Nome:</label>
+                <input type="text" id="adminNome" name="adminNome" required><br>
+                
+                <label for="adminEmail">Email:</label>
+                <input type="email" id="adminEmail" name="adminEmail" required><br>
+                
+                <label for="adminSenha">Senha:</label>
+                <input type="password" id="adminSenha" name="adminSenha" required><br>
+                
+                <label for="adminDataInicio">Data de Início:</label>
+                <input type="date" id="adminDataInicio" name="adminDataInicio" required><br>
+                
+                <label for="adminAreaEspecializacao">Área de Especialização:</label>
+                <input type="text" id="adminAreaEspecializacao" name="adminAreaEspecializacao"><br>
+            </div>
+
+            <div id="userFields" style="display: none;">
+                <label for="userName">Nome:</label>
+                <input type="text" id="userName" name="userName" required><br>
+                
+                <label for="userEmail">Email:</label>
+                <input type="email" id="userEmail" name="userEmail" required><br>
+                
+                <label for="userSenha">Senha:</label>
+                <input type="password" id="userSenha" name="userSenha" required><br>
+                
+                <label for="userStatus">Status:</label>
+                <select id="userStatus" name="userStatus" required>
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
+                </select><br>
+                
+                <label for="userTipo">Tipo:</label>
+                <select id="userTipo" name="userTipo" required>
+                    <option value="comprador">Comprador</option>
+                    <option value="vendedor">Vendedor</option>
+                    <option value="administrador">Administrador</option>
+                </select><br>
+            </div>
+            <input type="submit" value="Cadastrar">
         </form>
     </main>
 </body>

@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-
 const db = require('../db');
+
+
+
+//vizualizar de todos perfis de usuário
 router.get('/data', (req, res) => {
   const query = 'SELECT * FROM users';
 
@@ -15,10 +18,15 @@ router.get('/data', (req, res) => {
   });
 });
 
-router.post('/signup', async(req, res) => {
-  res.send('Rota de cadastro do usuário');
+
+
+//cadastro de usuários
+router.post('/signup', async (req, res) => {
 });
 
+
+
+//login de usuários
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   console.log('\n\nEmail:', email);
@@ -42,15 +50,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+
 router.put('/:id', (req, res) => {
   /// Implemente a edição do perfil do usuário aqui
   res.send('Rota de edição de usuários');
 });
 
+
+
 router.delete('/:id', (req, res) => {
   // Implemente o soft delete do usuário aqui
   res.send('Rota de soft delete de usuários');
 });
+
 
 module.exports = router;
 

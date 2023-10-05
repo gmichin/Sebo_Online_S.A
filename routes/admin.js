@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-
 const db = require('../db');
+
+
+
+//vizualizar todos perfis de adms
 router.get('/data', (req, res) => {
   const query = 'SELECT * FROM admin';
 
@@ -15,11 +18,13 @@ router.get('/data', (req, res) => {
   });
 });
 
-router.post('/signup', async(req, res) => {
-  res.send('Rota de cadastro');
+
+
+//cadastro de adms
+router.post('/signup', async (req, res) => {
 });
 
-
+//login de adms
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   console.log('\n\nEmail:', email);
@@ -44,14 +49,19 @@ router.post('/login', async (req, res) => {
 });
 
 
+
 router.get('/reports', (req, res) => {
   // Implemente a lógica para visualizar relatórios e estatísticas aqui
   res.send('Rota para visualizar relatórios e estatísticas');
 });
 
+
+
 router.get('/users', (req, res) => {
   // Implemente a lógica para visualizar a lista de usuários aqui
   res.send('Rota para visualizar a lista de usuários');
 });
+
+
 
 module.exports = router;
