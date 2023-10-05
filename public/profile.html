@@ -17,6 +17,43 @@
     <main>
         <h1>Perfil do Usuário</h1><br>
         <div id="userInfo"></div>
+        <br>
+        <!-- Adicione este botão para acionar a edição de perfil -->
+        <button id="editProfileButton">Editar Perfil</button>
+        <!-- Adicione um formulário para editar o perfil -->
+        <form id="editProfileForm" style="display: none;">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required><br>
+        
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"><br>
+        
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+            </select><br>
+        
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" required>
+                <option value="comprador">Comprador</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="administrador">Administrador</option>
+            </select><br>
+        
+            <label for="area_especializacao">Especialização:</label>
+            <input type="text" id="area_especializacao" name="area_especializacao" required><br>
+        
+            <label for="senha">Nova Senha:</label>
+            <input type="password" id="senha" name="senha" required><br>
+        
+            <label for="confirmacao_senha">Confirmação de Senha:</label>
+            <input type="password" id="confirmacao_senha" name="confirmacao_senha" required><br>
+        
+            <button type="submit">Salvar Alterações</button>
+        </form>
+        
+        
     </main>
     <script>
         function obterTokenDaURL() {
@@ -34,15 +71,12 @@
         }
         document.addEventListener("DOMContentLoaded", async function () {
             var token = obterTokenDaURL();
-            console.log('Token da URL:', token);
             try {
                 const response = await fetch(`http://localhost:3000/users/data`);
                 if (!response.ok) {
                     throw new Error("Erro ao buscar informações do usuário");
                 }
                 const userData = await response.json();
-
-                // Encontre o usuário com o token correspondente
                 const userEncontrado = userData.find(user => user.token === token);
 
                 if (userEncontrado) {
@@ -61,6 +95,50 @@
                 console.error("Erro:", error.message);
             }
         });
+
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            var token = obterTokenDaURL();
+            const editProfileButton = document.getElementById("editProfileButton");
+            const editProfileForm = document.getElementById("editProfileForm");
+
+            editProfileButton.addEventListener("click", function () {
+                editProfileForm.style.display = "block";
+            });
+            editProfileForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const nome = document.getElementById("nome").value;
+                const email = document.getElementById("email").value;
+                const status = document.getElementById("status").value;
+                const tipo = document.getElementById("tipo").value;
+                const area_especializacao = document.getElementById("area_especializacao").value;
+                const senha = document.getElementById("senha").value;
+                const confirmacao_senha = document.getElementById("confirmacao_senha").value;
+
+                if (senha !== confirmacao_senha) {
+                    alert("A senha e a confirmação de senha não correspondem.");
+                    return;
+                }
+                try {
+                    const response = await fetch(`http://localhost:3000/users/${token}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ nome, email, status, tipo, area_especializacao, senha }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erro ao editar perfil do usuário");
+                    }
+                    location.reload();
+                    editProfileForm.style.display = "none";
+                } catch (error) {
+                    console.error("Erro:", error.message);
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

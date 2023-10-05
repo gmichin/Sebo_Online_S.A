@@ -30,7 +30,6 @@
 
                 <label for="userConfirmSenha">Confirme a Senha:</label>
                 <input type="password" id="userConfirmSenha" name="userConfirmSenha" required onkeyup="verificarSenhas()"><br>
-                <span id="senhaMatch" style="color: red;"></span>
 
 
                 <label for="userStatus">Status:</label>
@@ -54,16 +53,8 @@
     </main>
     <script>
         function verificarSenhas() {
-            var senha = document.getElementById("userSenha").value;
-            var confirmSenha = document.getElementById("userConfirmSenha").value;
-            var senhaMatch = document.getElementById("senhaMatch");
-    
-            if (senha === confirmSenha) {
-                senhaMatch.textContent = "Senhas coincidem";
-                senhaMatch.style.color = "green";
-            } else {
-                senhaMatch.textContent = "As senhas não coincidem. Por favor, reescreva a senha.";
-                senhaMatch.style.color = "red";
+            if (senha != confirmSenha) {
+                alert("A senha e a confirmação de senha não correspondem.");
             }
         }
     </script>    

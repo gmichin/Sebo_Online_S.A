@@ -20,33 +20,6 @@ router.get('/data', (req, res) => {
 
 
 
-// Rota para obter as informações do usuário com base no token
-router.get('/profile', async (req, res) => {
-  const token = req.query.token;
-  if (!token) {
-    return res.status(400).json({ error: 'Token de autenticação ausente' });
-  }
-  const response = await fetch('http://localhost:3000/users/data');
-  const usersData = await response.json();
-  const user = usersData.find(user => user.token === token);
-  if (!user) {
-    return res.status(404).json({ error: 'Usuário não encontrado' });
-  }
-  res.json({
-    nome: user.nome,
-    email: user.email,
-    status: user.status,
-    tipo: user.tipo,
-    area_especializacao: user.area_especializacao
-  });
-});
-
-//cadastro de usuários
-router.post('/signup', async (req, res) => {
-});
-
-
-
 //login de usuários
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
@@ -75,9 +48,26 @@ router.post('/login', async (req, res) => {
 
 
 
-router.put('/:id', (req, res) => {
-  /// Implemente a edição do perfil do usuário aqui
-  res.send('Rota de edição de usuários');
+// Editar perfil de usuário por token
+router.put('/:token', (req, res) => {
+  const token = req.params.token;
+  const { nome, email, status, tipo, area_especializacao, senha } = req.body;
+  if (!nome || !email || !status || !tipo || !area_especializacao || !senha) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
+  const query = `UPDATE users SET nome=?, email=?, status=?, tipo=?, area_especializacao=?, senha= ? WHERE token=?`;
+
+  db.query(
+    query,
+    [nome, email, status, tipo, area_especializacao, senha, token],
+    (err, result) => {
+      if (err) {
+        res.status(500).json({ error: 'Erro ao editar perfil do usuário.' });
+      } else {
+        res.json({ message: 'Perfil de usuário editado com sucesso.' });
+      }
+    }
+  );
 });
 
 
@@ -85,6 +75,11 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   // Implemente o soft delete do usuário aqui
   res.send('Rota de soft delete de usuários');
+});
+
+
+//cadastro de usuários
+router.post('/signup', async (req, res) => {
 });
 
 
