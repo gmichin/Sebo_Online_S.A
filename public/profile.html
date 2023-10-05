@@ -18,9 +18,9 @@
         <h1>Perfil do Usuário</h1><br>
         <div id="userInfo"></div>
         <br>
-        <!-- Adicione este botão para acionar a edição de perfil -->
         <button id="editProfileButton">Editar Perfil</button>
-        <!-- Adicione um formulário para editar o perfil -->
+        <button id="deleteProfileButton">Deletar Perfil</button>
+
         <form id="editProfileForm" style="display: none;">
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required><br>
@@ -70,6 +70,7 @@
             return null;
         }
         document.addEventListener("DOMContentLoaded", async function () {
+            //GET DO PERFIL
             var token = obterTokenDaURL();
             try {
                 const response = await fetch(`http://localhost:3000/users/data`);
@@ -95,9 +96,8 @@
                 console.error("Erro:", error.message);
             }
         });
-
-
         document.addEventListener("DOMContentLoaded", async function () {
+            //EDIT DO PERFIL
             var token = obterTokenDaURL();
             const editProfileButton = document.getElementById("editProfileButton");
             const editProfileForm = document.getElementById("editProfileForm");
@@ -139,6 +139,29 @@
             });
         });
 
+        document.addEventListener("DOMContentLoaded", async function () {
+            //SOFT DELETE DE PERFIL
+            const deleteProfileButton = document.getElementById("deleteProfileButton");
+            deleteProfileButton.addEventListener("click", async function () {
+                const confirmacao = confirm("Tem certeza de que deseja deletar seu perfil? Esta ação é irreversível.");
+
+                if (confirmacao) {
+                    var token = obterTokenDaURL();
+                    try {
+                        const response = await fetch(`http://localhost:3000/users/${token}`, {
+                            method: 'DELETE',
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("Erro ao deletar perfil do usuário");
+                        }
+                        window.location.href = "index.html";
+                    } catch (error) {
+                        console.error("Erro:", error.message);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

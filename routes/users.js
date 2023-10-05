@@ -71,16 +71,35 @@ router.put('/:token', (req, res) => {
 });
 
 
-
+//deletar perfil pelo token
 router.delete('/:token', (req, res) => {
-  // Implemente o soft delete do usuário aqui
-  res.send('Rota de soft delete de usuários');
+  const userToken = req.params.token;
+  const query = 'DELETE FROM users WHERE token = ?';
+
+  db.query(query, [userToken], (err, result) => {
+      if (err) {
+          res.status(500).json({ error: 'Erro ao excluir o perfil do usuário.' });
+      } else {
+          res.json({ message: 'Perfil de usuário excluído com sucesso.' });
+      }
+  });
 });
+
 
 
 //cadastro de usuários
 router.post('/signup', async (req, res) => {
+  const { nome, email, senha, status, tipo, area_especializacao } = req.body;
+  const query = 'INSERT INTO users (nome, email, senha, status, tipo, area_especializacao) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(query, [nome, email, senha, status, tipo, area_especializacao], (err, result) => {
+      if (err) {
+          res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
+      } else {
+          res.json({ message: 'Usuário cadastrado com sucesso.' });
+      }
+  });
 });
+
 
 
 module.exports = router;

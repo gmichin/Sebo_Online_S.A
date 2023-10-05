@@ -26,7 +26,7 @@
 
                 
                 <label for="userSenha">Senha:</label>
-                <input type="password" id="userSenha" name="userSenha" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"><br>
+                <input type="password" id="userSenha" name="userSenha" required><br>
 
                 <label for="userConfirmSenha">Confirme a Senha:</label>
                 <input type="password" id="userConfirmSenha" name="userConfirmSenha" required onkeyup="verificarSenhas()"><br>
@@ -57,6 +57,47 @@
                 alert("A senha e a confirmação de senha não correspondem.");
             }
         }
+        document.addEventListener("DOMContentLoaded", async function () {
+            const cadastroForm = document.querySelector("form");
+
+            cadastroForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const userName = document.getElementById("userName").value;
+                const userEmail = document.getElementById("userEmail").value;
+                const userSenha = document.getElementById("userSenha").value;
+                const userStatus = document.getElementById("userStatus").value;
+                const userTipo = document.getElementById("userTipo").value;
+                const userEspecializacao = document.getElementById("userEspecializacao").value;
+
+                const userData = {
+                    nome: userName,
+                    email: userEmail,
+                    senha: userSenha,
+                    status: userStatus,
+                    tipo: userTipo,
+                    area_especializacao: userEspecializacao
+                };
+
+                try {
+                    const response = await fetch("http://localhost:3000/users/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(userData),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erro ao cadastrar usuário");
+                    }
+
+                    alert("Cadastro de usuário bem-sucedido!");
+                    window.location.href = "index.html"; 
+                } catch (error) {
+                    console.error("Erro:", error.message);
+                }
+            });
+        });
     </script>    
 </body>
 </html>
