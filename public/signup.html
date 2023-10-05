@@ -48,15 +48,24 @@
                 <label for="userEspecializacao">Área de especialização:</label>
                 <input type="text" id="userEspecializacao" name="userEspecializacao" required><br>
             </div>
-            <input type="submit" value="Cadastrar">
+            <button type="submit" id="submitButton" disabled>Cadastrar</button>
+
         </form>
     </main>
     <script>
         function verificarSenhas() {
-            if (senha != confirmSenha) {
+            const senha = document.getElementById("userSenha").value;
+            const confirmSenha = document.getElementById("userConfirmSenha").value;
+            const submitButton = document.getElementById("submitButton");
+
+            if (senha !== confirmSenha) {
                 alert("A senha e a confirmação de senha não correspondem.");
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
             }
         }
+
         document.addEventListener("DOMContentLoaded", async function () {
             const cadastroForm = document.querySelector("form");
 
