@@ -14,7 +14,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', require('./routes/users')); 
-app.use('/admin', require('./routes/admin')); 
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
