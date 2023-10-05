@@ -16,5 +16,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor rodando: http://localhost:${port}/}`);
+  console.log(`\nServidor rodando: http://localhost:${port}/}`);
 });

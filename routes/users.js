@@ -23,9 +23,6 @@ router.get('/data', (req, res) => {
 //login de usuários
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
-  console.log('\n\nEmail:', email);
-  console.log('Senha:', senha);
-
   try {
     const response = await fetch('http://localhost:3000/users/data');
     if (!response.ok) {
