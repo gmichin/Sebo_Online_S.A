@@ -20,6 +20,27 @@ router.get('/data', (req, res) => {
 
 
 
+// Rota para obter as informações do usuário com base no token
+router.get('/api/user', async (req, res) => {
+  const token = req.query.token;
+  if (!token) {
+    return res.status(400).json({ error: 'Token de autenticação ausente' });
+  }
+  const response = await fetch('http://localhost:3000/users/data');
+  const usersData = await response.json();
+  const user = usersData.find(user => user.token === token);
+  if (!user) {
+    return res.status(404).json({ error: 'Usuário não encontrado' });
+  }
+  res.json({
+    nome: user.nome,
+    email: user.email,
+    status: user.status,
+    tipo: user.tipo,
+    area_especializacao: user.area_especializacao
+  });
+});
+
 //cadastro de usuários
 router.post('/signup', async (req, res) => {
 });
@@ -40,7 +61,9 @@ router.post('/login', async (req, res) => {
     const usersData = await response.json();
     const user = usersData.find(user => user.email === email && user.senha === senha);
     if (user) {
-      res.send('Autenticação bem-sucedida');
+      const userToken = user.token;
+
+      res.redirect(`/profile.html?token=${userToken}`);
     } else {
       res.status(401).send('Autenticação falhou');
     }
