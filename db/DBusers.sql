@@ -29,14 +29,6 @@ DELIMITER ;
 
 -- Inserir um usuário comprador ativo
 INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
-VALUES ('João Silva', 'joao@example.com', 'senha123', 'ativo', 'comprador', 'Tecnologia');
-
--- Inserir um usuário vendedor ativo
-INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
-VALUES ('Maria Santos', 'maria@example.com', 'senha456', 'ativo', 'vendedor', 'Marketing');
-
--- Inserir um usuário administrador ativo
-INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
-VALUES ('Admin', 'admin@example.com', 'admin123', 'ativo', 'administrador', 'administração');
+VALUES ('Gustavo Massamichi Nakamura', 'g.massamichi@aluno.ifsp.edu.br', 'gu1234', 'ativo', 'administrador', 'Tecnologia');
 
 select * from users;
