@@ -20,7 +20,7 @@ router.get('/data', (req, res) => {
 
 
 
-//login de usuários
+// Login de usuários
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   try {
@@ -32,16 +32,17 @@ router.post('/login', async (req, res) => {
     const user = usersData.find(user => user.email === email && user.senha === senha);
     if (user) {
       const userToken = user.token;
-
-      res.redirect(`/profile.html?token=${userToken}`);
+      res.status(200).json({ success: true, redirectUrl: `/profile.html?token=${userToken}` });
     } else {
-      res.status(401).send('Autenticação falhou');
+      res.status(401).json({ success: false, message: 'Autenticação falhou' });
     }
   } catch (error) {
     console.error('Erro:', error.message);
-    res.status(500).send('Erro interno do servidor');
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
+
+
 
 
 
