@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const db = require('../db');
-
+const jwt = require('jsonwebtoken');
+const secretKey = 'senhaSecreta';
 
 
 //vizualizar de todos perfis de usuário
