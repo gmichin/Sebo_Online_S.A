@@ -35,12 +35,23 @@
             </select><br>
         
             <label for="tipo">Tipo:</label>
-            <select id="tipo" name="tipo" required>
+            <select id="tipo" name="tipo" required required onchange="toggleAdminFields()">
+                <option value="">Selecione o tipo</option>
                 <option value="comprador">Comprador</option>
                 <option value="vendedor">Vendedor</option>
                 <option value="administrador">Administrador</option>
             </select><br>
+
+            <div id="adminFields" style="display: none;">
+                <label for="adminEmail">Email:</label>
+                <input type="email" id="adminEmail" name="adminEmail"><br>
         
+                <label for="adminSenha">Senha:</label>
+                <input type="password" id="adminSenha" name="adminSenha"><br>
+        
+                <button type="button" onclick="authenticateAdmin()">Autenticar</button>
+            </div>
+
             <label for="area_especializacao">Especialização:</label>
             <input type="text" id="area_especializacao" name="area_especializacao" required><br>
         
@@ -50,7 +61,7 @@
             <label for="confirmacao_senha">Confirmação de Senha:</label>
             <input type="password" id="confirmacao_senha" name="confirmacao_senha" required><br>
         
-            <button type="submit">Salvar Alterações</button>
+            <button type="submit" id="submitButton" disabled onclick="verificarSenhas()">Salvar Alterações</button>
         </form>
         
         
@@ -69,8 +80,10 @@
             }
             return null;
         }
+
+
+        //GET DO PERFIL
         document.addEventListener("DOMContentLoaded", async function () {
-            //GET DO PERFIL
             var token = obterTokenDaURL();
             try {
                 const response = await fetch(`http://localhost:3000/users/data`);
@@ -96,29 +109,34 @@
                 console.error("Erro:", error.message);
             }
         });
+
+
+
+        //EDIT DO PERFIL
         document.addEventListener("DOMContentLoaded", async function () {
-            //EDIT DO PERFIL
-            var token = obterTokenDaURL();
             const editProfileButton = document.getElementById("editProfileButton");
             const editProfileForm = document.getElementById("editProfileForm");
 
             editProfileButton.addEventListener("click", function () {
                 editProfileForm.style.display = "block";
             });
-            editProfileForm.addEventListener("submit", async function (e) {
-                e.preventDefault();
+        });
+        async function verificarSenhas() {
+            const senha = document.getElementById("senha").value;
+            const confirmSenha = document.getElementById("confirmacao_senha").value;
+            const submitButton = document.getElementById("submitButton");
+
+            if (senha !== confirmSenha) {
+                alert("A senha e a confirmação de senha não correspondem.");
+                submitButton.disabled = true;
+                document.getElementById("tipo").value = "";
+            } else {
+                var token = obterTokenDaURL();
                 const nome = document.getElementById("nome").value;
                 const email = document.getElementById("email").value;
                 const status = document.getElementById("status").value;
                 const tipo = document.getElementById("tipo").value;
                 const area_especializacao = document.getElementById("area_especializacao").value;
-                const senha = document.getElementById("senha").value;
-                const confirmacao_senha = document.getElementById("confirmacao_senha").value;
-
-                if (senha !== confirmacao_senha) {
-                    alert("A senha e a confirmação de senha não correspondem.");
-                    return;
-                }
                 try {
                     const response = await fetch(`http://localhost:3000/users/${token}`, {
                         method: 'PUT',
@@ -127,7 +145,6 @@
                         },
                         body: JSON.stringify({ nome, email, status, tipo, area_especializacao, senha }),
                     });
-
                     if (!response.ok) {
                         throw new Error("Erro ao editar perfil do usuário");
                     }
@@ -136,31 +153,75 @@
                 } catch (error) {
                     console.error("Erro:", error.message);
                 }
-            });
-        });
+            }
+        }
+        
+        function toggleAdminFields() {
+            const userTypeSelect = document.getElementById("tipo");
+            const adminFields = document.getElementById("adminFields");
+            const submitButton = document.getElementById("submitButton");
 
-        document.addEventListener("DOMContentLoaded", async function () {
-            //SOFT DELETE DE PERFIL
+            if (userTypeSelect.value === "administrador") {
+                adminFields.style.display = "block";
+                submitButton.disabled = true;
+            } else {
+                adminFields.style.display = "none";
+                submitButton.disabled = false;
+            }
+        }
+
+        async function authenticateAdmin() {
+            const deleteProfileButton = document.getElementById("deleteProfileButton");
+
+            const adminEmail = document.getElementById("adminEmail").value;
+            const adminSenha = document.getElementById("adminSenha").value;
+            
+            const submitButton = document.getElementById("submitButton");
+            const adminFields = document.getElementById("adminFields");
+
+            const response = await fetch(`http://localhost:3000/users/data`);
+            const adminUsers = await response.json();
+            
+            const isAdmin = adminUsers.some(admin => {
+                return admin.email === adminEmail && admin.senha === adminSenha && admin.tipo === "administrador";
+            });
+
+            if (isAdmin) {
+                submitButton.disabled = false;
+            } else {
+                alert("Autenticação de administrador falhou.");
+                document.getElementById("tipo").value = "";
+                adminFields.style.display = "none";
+            } 
+        }
+
+
+        
+        
+        
+
+        //SOFT DELETE DE PERFIL
+        document.addEventListener("DOMContentLoaded", function () {
             const deleteProfileButton = document.getElementById("deleteProfileButton");
             deleteProfileButton.addEventListener("click", async function () {
-                const confirmacao = confirm("Tem certeza de que deseja deletar seu perfil? Esta ação é irreversível.");
+                    const confirmacao = confirm("Tem certeza de que deseja deletar seu perfil? Esta ação é irreversível.");
 
-                if (confirmacao) {
-                    var token = obterTokenDaURL();
-                    try {
-                        const response = await fetch(`http://localhost:3000/users/${token}`, {
+                    if (confirmacao) {
+                        var token = obterTokenDaURL();
+                        try {
+                            const response = await fetch(`http://localhost:3000/users/${token}`, {
                             method: 'DELETE',
-                        });
+                            });
 
-                        if (!response.ok) {
-                            throw new Error("Erro ao deletar perfil do usuário");
+                            if (!response.ok) {
+                                throw new Error("Erro ao deletar perfil do usuário");
+                            }
+                            window.location.href = "index.html";
+                        } catch (error) {
+                            console.error("Erro:", error.message);
                         }
-                        window.location.href = "index.html";
-                    } catch (error) {
-                        console.error("Erro:", error.message);
                     }
-                }
-            });
+            })
         });
     </script>
 </body>

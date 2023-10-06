@@ -29,7 +29,7 @@
                 <input type="password" id="userSenha" name="userSenha" required><br>
 
                 <label for="userConfirmSenha">Confirme a Senha:</label>
-                <input type="password" id="userConfirmSenha" name="userConfirmSenha" required onkeyup="verificarSenhas()"><br>
+                <input type="password" id="userConfirmSenha" name="userConfirmSenha" required><br>
 
 
                 <label for="userStatus">Status:</label>
@@ -39,20 +39,69 @@
                 </select><br>
                 
                 <label for="userTipo">Tipo:</label>
-                <select id="userTipo" name="userTipo" required>
+                <select id="userTipo" name="userTipo" required onchange="toggleAdminFields()">
+                    <option value="">Selecione o tipo</option>
                     <option value="comprador">Comprador</option>
                     <option value="vendedor">Vendedor</option>
                     <option value="administrador">Administrador</option>
                 </select><br>
 
+                <div id="adminFields" style="display: none;">
+                    <label for="adminEmail">Email:</label>
+                    <input type="email" id="adminEmail" name="adminEmail"><br>
+            
+                    <label for="adminSenha">Senha:</label>
+                    <input type="password" id="adminSenha" name="adminSenha"><br>
+            
+                    <button type="button" onclick="authenticateAdmin()">Autenticar</button>
+                </div>
+
                 <label for="userEspecializacao">Área de especialização:</label>
                 <input type="text" id="userEspecializacao" name="userEspecializacao" required><br>
             </div>
-            <button type="submit" id="submitButton" disabled>Cadastrar</button>
+            <button type="submit" id="submitButton" disabled  onclick="verificarSenhas()">Cadastrar</button>
 
         </form>
     </main>
     <script>
+        function toggleAdminFields() {
+            const userTypeSelect = document.getElementById("userTipo");
+            const adminFields = document.getElementById("adminFields");
+            const submitButton = document.getElementById("submitButton");
+
+            if (userTypeSelect.value === "administrador") {
+                adminFields.style.display = "block";
+                submitButton.disabled = true;
+            } else {
+                adminFields.style.display = "none";
+                submitButton.disabled = false;
+            }
+        }
+
+        async function authenticateAdmin() {
+            const adminEmail = document.getElementById("adminEmail").value;
+            const adminSenha = document.getElementById("adminSenha").value;
+            
+            const submitButton = document.getElementById("submitButton");
+            const adminFields = document.getElementById("adminFields");
+
+            const response = await fetch(`http://localhost:3000/users/data`);
+            const adminUsers = await response.json();
+            
+            const isAdmin = adminUsers.some(admin => {
+                return admin.email === adminEmail && admin.senha === adminSenha && admin.tipo === "administrador";
+            });
+
+            if (isAdmin) {
+                submitButton.disabled = false;
+            } else {
+                alert("Autenticação de administrador falhou.");
+                document.getElementById("userTipo").value = "";
+                adminFields.style.display = "none";
+            } 
+        }
+
+
         function verificarSenhas() {
             const senha = document.getElementById("userSenha").value;
             const confirmSenha = document.getElementById("userConfirmSenha").value;
@@ -61,6 +110,7 @@
             if (senha !== confirmSenha) {
                 alert("A senha e a confirmação de senha não correspondem.");
                 submitButton.disabled = true;
+                document.getElementById("userTipo").value = "";
             } else {
                 submitButton.disabled = false;
             }
