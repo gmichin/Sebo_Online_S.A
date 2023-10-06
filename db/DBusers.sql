@@ -27,8 +27,9 @@ END;
 //
 DELIMITER ;
 
--- Inserir um usuário comprador ativo
 INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
 VALUES ('Gustavo Massamichi Nakamura', 'g.massamichi@aluno.ifsp.edu.br', 'gu1234', 'ativo', 'administrador', 'Tecnologia');
 
+INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
+VALUES ('João', 'joao@gmail.com', 'senha123', 'ativo', 'comprador', 'Escritor');
 select * from users;
