@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const db = require('../db');
+const bcrypt = require('bcrypt');
+
 
 
 //vizualizar de todos perfis de usuário
@@ -22,14 +24,18 @@ router.get('/data', (req, res) => {
 // Login de usuários
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
+  
   try {
     const response = await fetch('http://localhost:3000/users/data');
+    
     if (!response.ok) {
       throw new Error('Erro ao buscar os dados dos usuários');
     }
+    
     const usersData = await response.json();
-    const user = usersData.find(user => user.email === email && user.senha === senha);
-    if (user) {
+    const user = usersData.find(user => user.email === email);
+    
+    if (user && await bcrypt.compare(senha, user.senha)) {
       const userToken = user.token;
       res.status(200).json({ success: true, redirectUrl: `/profile.html?token=${userToken}` });
     } else {
@@ -40,6 +46,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
+
 
 
 
@@ -87,13 +94,17 @@ router.delete('/:token', (req, res) => {
 //cadastro de usuários
 router.post('/signup', async (req, res) => {
   const { nome, email, senha, status, tipo, area_especializacao } = req.body;
+  
+  const hashedPassword = await bcrypt.hash(senha, 10);
+  
   const query = 'INSERT INTO users (nome, email, senha, status, tipo, area_especializacao) VALUES (?, ?, ?, ?, ?, ?)';
-  db.query(query, [nome, email, senha, status, tipo, area_especializacao], (err, result) => {
-      if (err) {
-          res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
-      } else {
-          res.json({ message: 'Usuário cadastrado com sucesso.' });
-      }
+  
+  db.query(query, [nome, email, hashedPassword, status, tipo, area_especializacao], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
+    } else {
+      res.json({ message: 'Usuário cadastrado com sucesso.' });
+    }
   });
 });
 

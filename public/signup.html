@@ -81,25 +81,32 @@
         async function authenticateAdmin() {
             const adminEmail = document.getElementById("adminEmail").value;
             const adminSenha = document.getElementById("adminSenha").value;
-            
             const submitButton = document.getElementById("submitButton");
             const adminFields = document.getElementById("adminFields");
 
-            const response = await fetch(`http://localhost:3000/users/data`);
-            const adminUsers = await response.json();
-            
-            const isAdmin = adminUsers.some(admin => {
-                return admin.email === adminEmail && admin.senha === adminSenha && admin.tipo === "administrador";
-            });
+            try {
+                const response = await fetch(`http://localhost:3000/users/data`);
+                const adminUsers = await response.json();
 
-            if (isAdmin) {
+                const isAdmin = adminUsers.some(async (admin) => {
+                if (admin.email === adminEmail && admin.tipo === "administrador") {
+                    return await bcrypt.compare(adminSenha, admin.senha);
+                }
+                return false;
+                });
+
+                if (isAdmin) {
                 submitButton.disabled = false;
-            } else {
+                } else {
                 alert("Autenticação de administrador falhou.");
                 document.getElementById("userTipo").value = "";
                 adminFields.style.display = "none";
-            } 
+                }
+            } catch (error) {
+                console.error("Erro:", error.message);
+            }
         }
+
 
 
         function verificarSenhas() {
