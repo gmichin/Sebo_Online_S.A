@@ -17,6 +17,20 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    status ENUM('ativo', 'inativo') NOT NULL,
+    tipo ENUM('comprador', 'vendedor', 'administrador') NOT NULL,
+    area_especializacao VARCHAR(255),
+    token VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	dataInicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 DELIMITER //
 CREATE TRIGGER generate_token_before_insert
 BEFORE INSERT ON users
@@ -27,9 +41,12 @@ END;
 //
 DELIMITER ;
 
-INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
-VALUES ('Gustavo Massamichi Nakamura', 'g.massamichi@aluno.ifsp.edu.br', 'gu1234', 'ativo', 'administrador', 'Tecnologia');
-
-INSERT INTO users (nome, email, senha, status, tipo, area_especializacao)
-VALUES ('João', 'joao@gmail.com', 'senha123', 'ativo', 'comprador', 'Escritor');
-select * from users;
+DELIMITER //
+CREATE TRIGGER generate_token_before_insert_admin
+BEFORE INSERT ON admin
+FOR EACH ROW
+BEGIN
+    SET NEW.token = SUBSTRING(MD5(RAND()), 1, 10);
+END;
+//
+DELIMITER ;
