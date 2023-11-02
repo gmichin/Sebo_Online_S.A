@@ -71,7 +71,7 @@ router.post('/login', async (req, res) => {
 
 
 
-
+//Rota para edição de usuários e adms
 router.put('/:tipo/:token', async (req, res) => {
   const token = req.params.token;
   const tipoURL = req.params.tipo;
@@ -110,7 +110,7 @@ router.put('/:tipo/:token', async (req, res) => {
 });
 
 
-
+//Rota de soft delete de usuários e adms
 router.delete('/:tipo/:token', (req, res) => {
   const userToken = req.params.token;
   const tipo  = req.params.tipo;
@@ -158,7 +158,175 @@ router.post('/signup', async (req, res) => {
   });
 });
 
+//Rota de adição de itens
+router.post('/items', async (req, res) => {
+  const { nome, descricao, preco, categoria } = req.body;
+  if (!nome || !descricao || !preco || !categoria) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
 
+  try {
+    const query = 'INSERT INTO items (nome, descricao, preco, categoria) VALUES (?, ?, ?, ?)';
+    db.query(query, [nome, descricao, preco, categoria], (err, result) => {
+      if (err) {
+        res.status(500).json({ error: 'Erro ao adicionar novo item.' });
+      } else {
+        res.json({ message: 'Novo item adicionado com sucesso.' });
+      }
+    });
+  } catch (error) {
+    console.error('Erro:', error.message);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+//Rota de listagem de itens
+router.get('/items', (req, res) => {
+  const query = 'SELECT * FROM items';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter a lista de itens.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//Rota de edição de itens
+router.put('/items/:item_id', (req, res) => {
+  const itemId = req.params.item_id;
+  const { nome, descricao, preco, categoria } = req.body;
+  if (!nome || !descricao || !preco || !categoria) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
+
+  const query = 'UPDATE items SET nome=?, descricao=?, preco=?, categoria=? WHERE item_id=?';
+  db.query(query, [nome, descricao, preco, categoria, itemId], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao editar o item.' });
+    } else {
+      res.json({ message: 'Item editado com sucesso.' });
+    }
+  });
+});
+
+//Rota de busca rápida de itens pelo nome
+router.get('/items/:nome', (req, res) => {
+  const searchTerm = req.query.nome; 
+
+  if (!searchTerm) {
+    return res.status(400).json({ error: 'O parâmetro "nome" é obrigatório na consulta.' });
+  }
+
+  const query = 'SELECT * FROM items WHERE nome LIKE ?';
+  const searchValue = `%${searchTerm}%`; 
+
+  db.query(query, [searchValue], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao realizar a busca de itens por nome.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+
+//Rora de criação de categorias
+router.post('/categories', (req, res) => {
+  const { nome } = req.body;
+  if (!nome) {
+    return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+  }
+
+  const query = 'INSERT INTO categories (nome) VALUES (?)';
+  db.query(query, [nome], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao criar nova categoria.' });
+    } else {
+      res.json({ message: 'Nova categoria criada com sucesso.' });
+    }
+  });
+});
+
+//Rota de listagem de categorias
+router.get('/categories', (req, res) => {
+  const query = 'SELECT * FROM categories';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter a lista de categorias.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//Rota de edição de categorias
+router.put('/categories/:category_id', (req, res) => {
+  const categoryId = req.params.category_id;
+  const { nome } = req.body;
+  if (!nome) {
+    return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+  }
+
+  const query = 'UPDATE categories SET nome=? WHERE category_id=?';
+  db.query(query, [nome, categoryId], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao editar a categoria.' });
+    } else {
+      res.json({ message: 'Categoria editada com sucesso.' });
+    }
+  });
+});
+
+//Rota para o soft delete de categorias
+router.put('/categories/delete/:category_id', (req, res) => {
+  const categoryId = req.params.category_id;
+
+  const query = 'UPDATE categories SET ativa = 0 WHERE category_id = ?';
+
+  db.query(query, [categoryId], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao realizar o soft delete da categoria.' });
+    } else {
+      res.json({ message: 'Categoria desativada com sucesso.' });
+    }
+  });
+});
+
+//Rota de egistro de novas transações
+router.post('/transactions', (req, res) => {
+  const { id_comprador, id_vendedor, id_item, valor } = req.body;
+  const data_transacao = new Date();
+
+  if (!id_comprador || !id_vendedor || !id_item || !valor) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
+
+  const query = 'INSERT INTO transactions (id_comprador, id_vendedor, id_item, data_transacao, valor) VALUES (?, ?, ?, ?, ?)';
+
+  db.query(query, [id_comprador, id_vendedor, id_item, data_transacao, valor], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao registrar a transação.' });
+    } else {
+      res.json({ message: 'Transação registrada com sucesso.' });
+    }
+  });
+});
+
+// Visualização de transações para um usuário específico
+router.get('/transactions/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  const query = 'SELECT * FROM transactions WHERE id_comprador = ? OR id_vendedor = ?';
+
+  db.query(query, [userId, userId], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter as transações do usuário.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
 
 
 module.exports = router;
