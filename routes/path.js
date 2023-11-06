@@ -159,7 +159,7 @@ router.post('/signup', async (req, res) => {
 });
 
 //Rota de adição de itens
-router.post('/items', async (req, res) => {
+router.post('/itens', async (req, res) => {
   const { nome, descricao, preco, categoria } = req.body;
   if (!nome || !descricao || !preco || !categoria) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
@@ -181,7 +181,7 @@ router.post('/items', async (req, res) => {
 });
 
 //Rota de listagem de itens
-router.get('/items', (req, res) => {
+router.get('/itens', (req, res) => {
   const query = 'SELECT * FROM items';
   db.query(query, (err, result) => {
     if (err) {
@@ -193,7 +193,7 @@ router.get('/items', (req, res) => {
 });
 
 //Rota de edição de itens
-router.put('/items/:item_id', (req, res) => {
+router.put('/itens/:item_id', (req, res) => {
   const itemId = req.params.item_id;
   const { nome, descricao, preco, categoria } = req.body;
   if (!nome || !descricao || !preco || !categoria) {
@@ -211,7 +211,7 @@ router.put('/items/:item_id', (req, res) => {
 });
 
 //Rota de busca rápida de itens pelo nome
-router.get('/items/:nome', (req, res) => {
+router.get('/itens/:nome', (req, res) => {
   const searchTerm = req.query.nome; 
 
   if (!searchTerm) {
