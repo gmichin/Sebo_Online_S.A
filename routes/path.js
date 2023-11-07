@@ -233,7 +233,7 @@ router.get('/items/:id', (req, res) => {
 router.post('/categories', (req, res) => {
   const { nome, descricao } = req.body;
   if (!nome || !descricao) {
-    return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
 
   const query = 'INSERT INTO categories (nome, descricao) VALUES (?, ?)';
@@ -259,15 +259,15 @@ router.get('/categories', (req, res) => {
 });
 
 //Rota de edição de categorias
-router.put('/categories/:id', (req, res) => {
+router.put('/categories/edit/:id', (req, res) => {
   const id = req.params.id;
-  const { nome, descricao, ativa } = req.body;
-  if (!nome || !descricao || !ativa) {
-    return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+  const { nome, descricao } = req.body;
+  if (!nome || !descricao) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.'});
   }
 
-  const query = 'UPDATE categories SET nome=?, descricao=?, ativa=? WHERE id=?';
-  db.query(query, [nome, descricao, ativa, id], (err, result) => {
+  const query = 'UPDATE categories SET nome=?, descricao=?WHERE id=?';
+  db.query(query, [nome, descricao, id], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao editar a categoria.' });
     } else {
@@ -277,12 +277,12 @@ router.put('/categories/:id', (req, res) => {
 });
 
 //Rota para o soft delete de categorias
-router.put('/categories/delete/:category_id', (req, res) => {
-  const categoryId = req.params.category_id;
+router.delete('/categories/delete/:id', (req, res) => {
+  const id = req.params.id;
 
-  const query = 'UPDATE categories SET ativa = 0 WHERE category_id = ?';
+  const query = `DELETE FROM categories WHERE id = ?`;
 
-  db.query(query, [categoryId], (err, result) => {
+  db.query(query, [id], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao realizar o soft delete da categoria.' });
     } else {
@@ -291,7 +291,7 @@ router.put('/categories/delete/:category_id', (req, res) => {
   });
 });
 
-//Rota de egistro de novas transações
+//Rota de registro de novas transações
 router.post('/transactions', (req, res) => {
   const { id_comprador, id_vendedor, id_item, valor } = req.body;
   const data_transacao = new Date();
