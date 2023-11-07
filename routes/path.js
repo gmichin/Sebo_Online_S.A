@@ -159,15 +159,15 @@ router.post('/signup', async (req, res) => {
 });
 
 //Rota de adição de itens
-router.post('/itens', async (req, res) => {
-  const { nome, descricao, preco, categoria } = req.body;
-  if (!nome || !descricao || !preco || !categoria) {
+router.post('/items', async (req, res) => {
+  const { titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor } = req.body;
+  if (!titulo || !autor || !categoria || !preco || !descricao || !status || !periodicidade || !id_vendedor) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
 
   try {
-    const query = 'INSERT INTO items (nome, descricao, preco, categoria) VALUES (?, ?, ?, ?)';
-    db.query(query, [nome, descricao, preco, categoria], (err, result) => {
+    const query = 'INSERT INTO items (titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor], (err, result) => {
       if (err) {
         res.status(500).json({ error: 'Erro ao adicionar novo item.' });
       } else {
@@ -181,7 +181,7 @@ router.post('/itens', async (req, res) => {
 });
 
 //Rota de listagem de itens
-router.get('/itens', (req, res) => {
+router.get('/items', (req, res) => {
   const query = 'SELECT * FROM items';
   db.query(query, (err, result) => {
     if (err) {
@@ -193,15 +193,15 @@ router.get('/itens', (req, res) => {
 });
 
 //Rota de edição de itens
-router.put('/itens/:item_id', (req, res) => {
-  const itemId = req.params.item_id;
-  const { nome, descricao, preco, categoria } = req.body;
-  if (!nome || !descricao || !preco || !categoria) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+router.put('/items/:id', (req, res) => {
+  const id = req.params.id;
+  const { titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor } = req.body;
+  if (!titulo || !autor || !categoria || !preco || !descricao || !status || !periodicidade || !id_vendedor) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' + "\ntitulo: "+titulo+"\nautor:"+ autor+"\ncategoria: "+categoria+"\npreco: "+preco+"\ndescricao: "+descricao+"\nstatus: "+status+"\nperiodicidade: "+periodicidade+"\nid_vendedor: "+id_vendedor});
   }
 
-  const query = 'UPDATE items SET nome=?, descricao=?, preco=?, categoria=? WHERE item_id=?';
-  db.query(query, [nome, descricao, preco, categoria, itemId], (err, result) => {
+  const query = 'UPDATE items SET titulo=?, autor=?, categoria=?, preco=?, descricao=?, status=?, periodicidade=?, id_vendedor=? WHERE id=?';
+  db.query(query, [titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor, id], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao editar o item.' });
     } else {
@@ -211,17 +211,15 @@ router.put('/itens/:item_id', (req, res) => {
 });
 
 //Rota de busca rápida de itens pelo nome
-router.get('/itens/:nome', (req, res) => {
-  const searchTerm = req.query.nome; 
+router.get('/items/:id', (req, res) => {
+  const searchTerm = req.params.id; 
 
   if (!searchTerm) {
-    return res.status(400).json({ error: 'O parâmetro "nome" é obrigatório na consulta.' });
+    return res.status(400).json({ error: 'O parâmetro "id" é obrigatório na consulta.'});
   }
 
-  const query = 'SELECT * FROM items WHERE nome LIKE ?';
-  const searchValue = `%${searchTerm}%`; 
-
-  db.query(query, [searchValue], (err, result) => {
+  const query = 'SELECT * FROM items WHERE id = ?';
+  db.query(query, [searchTerm], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao realizar a busca de itens por nome.' });
     } else {
