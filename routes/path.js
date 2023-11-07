@@ -193,11 +193,11 @@ router.get('/items', (req, res) => {
 });
 
 //Rota de edição de itens
-router.put('/items/:id', (req, res) => {
+router.put('/items/edit/:id', (req, res) => {
   const id = req.params.id;
   const { titulo, autor, categoria, preco, descricao, status, periodicidade, id_vendedor } = req.body;
   if (!titulo || !autor || !categoria || !preco || !descricao || !status || !periodicidade || !id_vendedor) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' + "\ntitulo: "+titulo+"\nautor:"+ autor+"\ncategoria: "+categoria+"\npreco: "+preco+"\ndescricao: "+descricao+"\nstatus: "+status+"\nperiodicidade: "+periodicidade+"\nid_vendedor: "+id_vendedor});
+    return res.status(400).json({ error: "Todos os campos são obrigatórios."});
   }
 
   const query = 'UPDATE items SET titulo=?, autor=?, categoria=?, preco=?, descricao=?, status=?, periodicidade=?, id_vendedor=? WHERE id=?';
@@ -231,13 +231,13 @@ router.get('/items/:id', (req, res) => {
 
 //Rora de criação de categorias
 router.post('/categories', (req, res) => {
-  const { nome } = req.body;
-  if (!nome) {
+  const { nome, descricao } = req.body;
+  if (!nome || !descricao) {
     return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
   }
 
-  const query = 'INSERT INTO categories (nome) VALUES (?)';
-  db.query(query, [nome], (err, result) => {
+  const query = 'INSERT INTO categories (nome, descricao) VALUES (?, ?)';
+  db.query(query, [nome, descricao], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao criar nova categoria.' });
     } else {
@@ -259,15 +259,15 @@ router.get('/categories', (req, res) => {
 });
 
 //Rota de edição de categorias
-router.put('/categories/:category_id', (req, res) => {
-  const categoryId = req.params.category_id;
-  const { nome } = req.body;
-  if (!nome) {
+router.put('/categories/:id', (req, res) => {
+  const id = req.params.id;
+  const { nome, descricao, ativa } = req.body;
+  if (!nome || !descricao || !ativa) {
     return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
   }
 
-  const query = 'UPDATE categories SET nome=? WHERE category_id=?';
-  db.query(query, [nome, categoryId], (err, result) => {
+  const query = 'UPDATE categories SET nome=?, descricao=?, ativa=? WHERE id=?';
+  db.query(query, [nome, descricao, ativa, id], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao editar a categoria.' });
     } else {
