@@ -61,21 +61,10 @@ CREATE TABLE items (
     status ENUM('ativo', 'inativo', 'estoque', 'fora_de_estoque') NOT NULL,
     periodicidade VARCHAR(50),
     id_vendedor INT NOT NULL,
-    token VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_edicao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id_vendedor) REFERENCES users(id)
 );
-
-DELIMITER //
-CREATE TRIGGER generate_token_before_insert_item
-BEFORE INSERT ON items
-FOR EACH ROW
-BEGIN
-    SET NEW.token = SUBSTRING(MD5(RAND()), 1, 10);
-END;
-//
-DELIMITER ;
 
 CREATE TABLE transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,36 +73,15 @@ CREATE TABLE transactions (
     id_item INT NOT NULL,
     data_transacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     valor FLOAT NOT NULL,
-    token VARCHAR(10) NOT NULL,
     FOREIGN KEY (id_comprador) REFERENCES users(id),
     FOREIGN KEY (id_vendedor) REFERENCES users(id),
     FOREIGN KEY (id_item) REFERENCES items(id)
 );
-DELIMITER //
-CREATE TRIGGER transactions
-BEFORE INSERT ON transactions
-FOR EACH ROW
-BEGIN
-    SET NEW.token = SUBSTRING(MD5(RAND()), 1, 10);
-END;
-//
-DELIMITER ;
-
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     descricao TEXT,
-    token VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-DELIMITER //
-CREATE TRIGGER categories
-BEFORE INSERT ON categories
-FOR EACH ROW
-BEGIN
-    SET NEW.token = SUBSTRING(MD5(RAND()), 1, 10);
-END;
-//
-DELIMITER ;
