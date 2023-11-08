@@ -17,6 +17,7 @@ router.get('/dataUser', (req, res) => {
     }
   });
 });
+
 //vizualizar de todos perfis de Admins
 router.get('/dataAdmin', (req, res) => {
   const query = 'SELECT * FROM admin';
@@ -222,6 +223,27 @@ router.get('/items/:id', (req, res) => {
   db.query(query, [searchTerm], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao realizar a busca de itens por nome.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//Rota de listagem de itens com filtro
+router.get('/items/:field/:value', (req, res) => {
+  const { field, value } = req.params;
+  const validFields = ['titulo', 'autor', 'categoria', 'preco', 'descricao', 'status', 'periodicidade', 'id_vendedor'];
+
+  if (!validFields.includes(field)) {
+    res.status(400).json({ error: 'Campo inválido.' });
+    return;
+  }
+
+  const query = `SELECT * FROM items WHERE ${field} = ?`;
+
+  db.query(query, [value], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter a lista de itens.' });
     } else {
       res.json(result);
     }
