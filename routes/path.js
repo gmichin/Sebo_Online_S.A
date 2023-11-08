@@ -294,15 +294,14 @@ router.delete('/categories/delete/:id', (req, res) => {
 //Rota de registro de novas transações
 router.post('/transactions', (req, res) => {
   const { id_comprador, id_vendedor, id_item, valor } = req.body;
-  const data_transacao = new Date();
 
   if (!id_comprador || !id_vendedor || !id_item || !valor) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
 
-  const query = 'INSERT INTO transactions (id_comprador, id_vendedor, id_item, data_transacao, valor) VALUES (?, ?, ?, ?, ?)';
+  const query = 'INSERT INTO transactions (id_comprador, id_vendedor, id_item, valor) VALUES (?, ?, ?, ?)';
 
-  db.query(query, [id_comprador, id_vendedor, id_item, data_transacao, valor], (err, result) => {
+  db.query(query, [id_comprador, id_vendedor, id_item, valor], (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Erro ao registrar a transação.' });
     } else {

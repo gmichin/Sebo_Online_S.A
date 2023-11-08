@@ -83,7 +83,7 @@ CREATE TABLE transactions (
     id_vendedor INT NOT NULL,
     id_item INT NOT NULL,
     data_transacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    valor DECIMAL(10, 2) NOT NULL,
+    valor FLOAT NOT NULL,
     token VARCHAR(10) NOT NULL,
     FOREIGN KEY (id_comprador) REFERENCES users(id),
     FOREIGN KEY (id_vendedor) REFERENCES users(id),
