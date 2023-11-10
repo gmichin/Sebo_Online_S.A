@@ -85,3 +85,5 @@ CREATE TABLE categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+INSERT INTO admin (nome, email, senha, status, tipo, area_especializacao) VALUES ('Gustavo Nakamura', 'gmichin@gmail.com', 'gu1234', 'ativo', 'administrador', 'adm');
