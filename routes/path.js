@@ -6,31 +6,15 @@ const bcrypt = require('bcrypt');
 
 
 
-//vizualizar de todos perfis de usuário
-router.get('/dataUser', (req, res) => {
-  const query = 'SELECT * FROM users';
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: 'Erro ao obter dados do banco de dados.' });
-    } else {
-      res.json(result);
-    }
-  });
-});
+let isAuthenticated = false;
 
-//vizualizar de todos perfis de Admins
-router.get('/dataAdmin', (req, res) => {
-  const query = 'SELECT * FROM admin';
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: 'Erro ao obter dados do banco de dados.' });
-    } else {
-      res.json(result);
-    }
-  });
-});
-
-
+const checkAuthentication = (req, res, next) => {
+  if (isAuthenticated) {
+    next();
+  } else {
+    res.status(401).json({ success: false, message: 'Não autorizado' });
+  }
+};
 
 const authenticate = async (url, email, senha) => {
   try {
@@ -52,7 +36,7 @@ const authenticate = async (url, email, senha) => {
   }
 };
 
-// Rota de login de users ou admin
+// Rota de login de users
 router.post('/users/login', async (req, res) => {
   const { email, senha } = req.body;
   
@@ -64,19 +48,54 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
-// Rota de login de users ou admin
-router.post('/admin/login', async (req, res) => {
-  const { email, senha } = req.body;
-  
-    const adminLoginResult = await authenticate('http://localhost:3000/path/dataAdmin', email, senha);
-    if (adminLoginResult.success) {
-      res.status(200).json(adminLoginResult);
-    } else {
-      res.status(401).json({ success: false, message: 'Autenticação falhou' });
-    }
+// Rota de users logout
+router.post('/users/logout', (req, res) => {
+  res.status(200).json({ success: true, message: 'Logout bem-sucedido' });
 });
 
 
+// Rota de login de admin
+router.post('/admin/login', async (req, res) => {
+  const { email, senha } = req.body;
+  const adminLoginResult = await authenticate('http://localhost:3000/path/dataAdmin', email, senha);
+  
+  if (adminLoginResult.success) {
+    isAuthenticated = true; 
+    res.status(200).json(adminLoginResult);
+  } else {
+    res.status(401).json({ success: false, message: 'Autenticação falhou' });
+  }
+});
+
+// Rota de admin logout
+router.post('/admin/logout', (req, res) => {
+  isAuthenticated = false; 
+  res.status(200).json({ success: true, message: 'Logout bem-sucedido' });
+});
+
+//vizualizar de todos perfis de usuário
+router.get('/dataUser', checkAuthentication, (req, res) => {
+  const query = 'SELECT * FROM users';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter dados do banco de dados.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//vizualizar de todos perfis de Admins
+router.get('/dataAdmin', (req, res) => {
+  const query = 'SELECT * FROM admin';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao obter dados do banco de dados.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
 
 
 //Rota para edição de usuários e adms
@@ -159,7 +178,7 @@ router.post('/users/signup', async (req, res) => {
   });
 });
 
-//cadastro de users
+//cadastro de admin
 router.post('/admin/signup', async (req, res) => {
   const { nome, email, senha, status, tipo, area_especializacao } = req.body;
   const hashedPassword = await bcrypt.hash(senha, 10);
