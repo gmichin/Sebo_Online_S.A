@@ -42,7 +42,7 @@ const authenticate = async (url, email, senha) => {
     const user = data.find(user => user.email === email);
     if (user && await bcrypt.compare(senha, user.senha)) {
       const userToken = user.token;
-      return { success: true, redirectUrl: `/profile.html?token=${userToken}` };
+      return { success: true, message: 'Autenticação feita com sucesso!' };
     } else {
       return { success: false, message: 'Autenticação falhou' };
     }
@@ -53,20 +53,27 @@ const authenticate = async (url, email, senha) => {
 };
 
 // Rota de login de users ou admin
-router.post('/login', async (req, res) => {
+router.post('/users/login', async (req, res) => {
   const { email, senha } = req.body;
   
   const userLoginResult = await authenticate('http://localhost:3000/path/dataUser', email, senha);
   if (userLoginResult.success) {
     res.status(200).json(userLoginResult);
   } else {
+    res.status(401).json({ success: false, message: 'Autenticação falhou' });
+  }
+});
+
+// Rota de login de users ou admin
+router.post('/admin/login', async (req, res) => {
+  const { email, senha } = req.body;
+  
     const adminLoginResult = await authenticate('http://localhost:3000/path/dataAdmin', email, senha);
     if (adminLoginResult.success) {
       res.status(200).json(adminLoginResult);
     } else {
       res.status(401).json({ success: false, message: 'Autenticação falhou' });
     }
-  }
 });
 
 
@@ -136,25 +143,34 @@ router.delete('/:tipo/:token', (req, res) => {
 
 
 
-//cadastro de admin ou users
-router.post('/signup', async (req, res) => {
+//cadastro de users
+router.post('/users/signup', async (req, res) => {
   const { nome, email, senha, status, tipo, area_especializacao } = req.body;
   const hashedPassword = await bcrypt.hash(senha, 10);
 
-  let tableName;
-  if (tipo === 'administrador') {
-    tableName = 'admin';
-  } else {
-    tableName = 'users';
-  }
-
-  const query = `INSERT INTO ${tableName} (nome, email, senha, status, tipo, area_especializacao) VALUES (?, ?, ?, ?, ?, ?)`;
+  const query = `INSERT INTO users (nome, email, senha, status, tipo, area_especializacao) VALUES (?, ?, ?, ?, ?, ?)`;
 
   db.query(query, [nome, email, hashedPassword, status, tipo, area_especializacao], (err, result) => {
     if (err) {
-      res.status(500).json({ error: 'Erro ao cadastrar usuário ou administrador.' });
+      res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
     } else {
-      res.json({ message: 'Usuário ou administrador cadastrado com sucesso.' });
+      res.json({ message: 'Usuário cadastrado com sucesso.' });
+    }
+  });
+});
+
+//cadastro de users
+router.post('/admin/signup', async (req, res) => {
+  const { nome, email, senha, status, tipo, area_especializacao } = req.body;
+  const hashedPassword = await bcrypt.hash(senha, 10);
+
+  const query = `INSERT INTO admin (nome, email, senha, status, tipo, area_especializacao) VALUES (?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [nome, email, hashedPassword, status, tipo, area_especializacao], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
+    } else {
+      res.json({ message: 'Usuário cadastrado com sucesso.' });
     }
   });
 });
