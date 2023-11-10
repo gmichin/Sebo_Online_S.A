@@ -19,7 +19,9 @@ Seu texto deve ser entregue em formato PDF, seu código enviado via Git, ou atra
 Primeiramente, defina os principais atores e recursos do sistema. No contexto de um SEBO online, são cruciais:
 - Usuários: usuários comuns, que podem ser tanto vendedores quanto compradores, além dos funcionários do SEBO e da administração do sistema.
 - Produtos: itens colocados à venda pelos usuários.
-- Transações: vendas realizadas entre vendedores e compradores. Após definir nossos objetos/atores/recursos, é necessário respeitar (no mínimo) as seguintes regras de negócio:
+- Transações: vendas realizadas entre vendedores e compradores. 
+
+Após definir nossos objetos/atores/recursos, é necessário respeitar (no mínimo) as seguintes regras de negócio:
 - Permitir o cadastro, edição e remoção de usuários.
 - Permitir o cadastro, edição e remoção de livros.
 - Registrar transações entre vendedores e compradores.
@@ -28,7 +30,10 @@ Primeiramente, defina os principais atores e recursos do sistema. No contexto de
 - A plataforma deve ter um sistema de autenticação e autorização para garantir a segurança dos dados dos usuários.
 - Realizar as remoções de objetos/atores já envolvidos em transações, apenas por soft delete.
 ### 3.1 Endpoints e atributos sugeridos
-Alguns endpoints básicos são necessários para os testes realizados na correção pelo docente: Além dos endpoints apresentados aqui, pode-se implementar outros, desde que respeitadas as padronizações ofertadas para APIs Restfull pela OpenAPI.
+Alguns endpoints básicos são necessários para os testes realizados na correção pelo docente, além dos endpoints apresentados aqui, pode-se implementar outros, desde que respeitadas as padronizações ofertadas para APIs Restfull pela OpenAPI. A liberdade na modelagem é incentivada,
+portanto, não se apegue aos itens apresentados, desde que as funcionalidades testadas
+nas entregas sejam possíveis, atente-se ao máximo em entregar o que foi pedido nas
+entregas.
 ##### 3.1.1 Usuários
 Campos sugeridos:
 - ID, Nome, Email, Senha (criptografada), Status (ativo/inativo), Tipo (comprador/vendedor/administrador)
@@ -125,8 +130,5 @@ Implementar a funcionalidade de transações e otimizar a experiência do usuár
 ### 9.2 Requisitos
 ##### 9.2.1 Itens
 - Listagem dos itens cadastrados, com filtros: titulo, isbn, autor;
-##### 9.2.2 Otimização e Busca de Itens
-- Otimização da busca de itens para eficiência e relevância.
-- Implementação de filtros avançados. 
-##### 9.2.3 Documentação
+##### 9.2.2 Documentação
 - Documentação da API. 
