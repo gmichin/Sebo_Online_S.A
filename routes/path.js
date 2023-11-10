@@ -251,7 +251,7 @@ router.get('/items/:field/:value', (req, res) => {
 });
 
 
-//Deletar transações
+//Deletar itens
 router.delete('/items/delete/:id', (req, res) => {
   const id = req.params.id;
 
