@@ -251,6 +251,21 @@ router.get('/items/:field/:value', (req, res) => {
 });
 
 
+//Deletar transações
+router.delete('/items/delete/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = `DELETE FROM items WHERE id = ?`;
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao realizar o soft delete da item.' });
+    } else {
+      res.json({ message: 'Item desativado com sucesso.' });
+    }
+  });
+});
+
 //Rora de criação de categorias
 router.post('/categories', (req, res) => {
   const { nome, descricao } = req.body;
@@ -343,6 +358,21 @@ router.get('/transactions/:userId', (req, res) => {
       res.status(500).json({ error: 'Erro ao obter as transações do usuário.' });
     } else {
       res.json(result);
+    }
+  });
+});
+
+//Deletar transações
+router.delete('/transactions/delete/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = `DELETE FROM transactions WHERE id = ?`;
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Erro ao realizar o soft delete da transação.' });
+    } else {
+      res.json({ message: 'Transação desativada com sucesso.' });
     }
   });
 });
